@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Tisha B'Av 5786</title>
+<meta name="description" content="A live countdown to the end of the fast, and to the rebuilding." />
+
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#05070f" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Tisha B'Av" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Frank+Ruhl+Libre:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ── atmosphere ─────────────────────────────────────────── -->
+<div class="sky" aria-hidden="true">
+  <div class="sky__layer sky__layer--night"></div>
+  <div class="sky__layer sky__layer--deep" id="skyDeep"></div>
+  <div class="sky__layer sky__layer--dawn" id="skyDawn"></div>
+  <div class="sky__layer sky__layer--break" id="skyBreak"></div>
+  <div class="stars" id="stars"></div>
+  <div class="motes" id="motes"></div>
+</div>
+
+<!-- ── horizon ────────────────────────────────────────────── -->
+<div class="horizon" aria-hidden="true">
+  <svg viewBox="0 0 1200 420" preserveAspectRatio="xMidYMax meet" role="img">
+    <defs>
+      <radialGradient id="halo" cx="50%" cy="62%" r="50%">
+        <stop offset="0%" stop-color="#ffcf7a" stop-opacity=".85" />
+        <stop offset="55%" stop-color="#e08a3c" stop-opacity=".28" />
+        <stop offset="100%" stop-color="#e08a3c" stop-opacity="0" />
+      </radialGradient>
+      <linearGradient id="doorGlow" x1="0" y1="1" x2="0" y2="0">
+        <stop offset="0%" stop-color="#ffe2a3" stop-opacity=".95" />
+        <stop offset="60%" stop-color="#ffb648" stop-opacity=".55" />
+        <stop offset="100%" stop-color="#ff9d2e" stop-opacity="0" />
+      </linearGradient>
+      <linearGradient id="haze" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#f0b877" stop-opacity="0" />
+        <stop offset="100%" stop-color="#f0b877" stop-opacity=".5" />
+      </linearGradient>
+      <filter id="soften" x="-40%" y="-40%" width="180%" height="180%">
+        <feGaussianBlur stdDeviation="9" />
+      </filter>
+    </defs>
+
+    <!-- glow behind the sanctuary -->
+    <circle id="halo" cx="600" cy="200" r="330" fill="url(#halo)" opacity="0" />
+
+    <!-- distant hills of Yerushalayim -->
+    <path class="hills" d="M0,308 Q140,262 292,296 Q430,326 546,288 Q672,246 806,292 Q944,338 1060,296 Q1140,268 1200,286 L1200,420 L0,420 Z" />
+
+    <!-- haze at the horizon -->
+    <rect id="hazeBand" x="0" y="250" width="1200" height="170" fill="url(#haze)" opacity="0" />
+
+    <g class="temple">
+      <!-- outer courtyard walls -->
+      <rect class="s-dark" x="52" y="302" width="240" height="54" />
+      <rect class="s-dark" x="908" y="302" width="240" height="54" />
+      <g class="s-dark">
+        <rect x="60" y="292" width="22" height="12" /><rect x="104" y="292" width="22" height="12" />
+        <rect x="148" y="292" width="22" height="12" /><rect x="192" y="292" width="22" height="12" />
+        <rect x="236" y="292" width="22" height="12" /><rect x="916" y="292" width="22" height="12" />
+        <rect x="960" y="292" width="22" height="12" /><rect x="1004" y="292" width="22" height="12" />
+        <rect x="1048" y="292" width="22" height="12" /><rect x="1092" y="292" width="22" height="12" />
+      </g>
+
+      <!-- side chambers -->
+      <rect class="s-mid" x="288" y="258" width="186" height="98" />
+      <rect class="s-mid" x="726" y="258" width="186" height="98" />
+      <rect class="s-mid" x="278" y="248" width="206" height="12" />
+      <rect class="s-mid" x="716" y="248" width="206" height="12" />
+
+      <!-- heichal body behind the porch -->
+      <rect class="s-mid" x="474" y="164" width="252" height="192" />
+
+      <!-- the porch: tall front facade -->
+      <rect class="s-light" x="440" y="112" width="320" height="244" />
+      <rect class="s-light" x="426" y="98" width="348" height="16" />
+
+      <!-- golden roof spikes -->
+      <g class="spikes" id="spikes">
+        <path d="M436,98 l9,-18 l9,18 Z" /><path d="M466,98 l9,-18 l9,18 Z" />
+        <path d="M496,98 l9,-18 l9,18 Z" /><path d="M526,98 l9,-18 l9,18 Z" />
+        <path d="M556,98 l9,-18 l9,18 Z" /><path d="M586,98 l9,-18 l9,18 Z" />
+        <path d="M616,98 l9,-18 l9,18 Z" /><path d="M646,98 l9,-18 l9,18 Z" />
+        <path d="M676,98 l9,-18 l9,18 Z" /><path d="M706,98 l9,-18 l9,18 Z" />
+        <path d="M736,98 l9,-18 l9,18 Z" />
+      </g>
+
+      <!-- the great doorway -->
+      <rect id="doorway" x="546" y="196" width="108" height="160" fill="url(#doorGlow)" opacity=".08" />
+      <rect class="s-light" x="532" y="182" width="136" height="16" />
+
+      <!-- narrow windows -->
+      <g id="windows">
+        <rect x="480" y="140" width="15" height="40" /><rect x="705" y="140" width="15" height="40" />
+        <rect x="322" y="286" width="15" height="40" /><rect x="366" y="286" width="15" height="40" />
+        <rect x="410" y="286" width="15" height="40" /><rect x="775" y="286" width="15" height="40" />
+        <rect x="819" y="286" width="15" height="40" /><rect x="863" y="286" width="15" height="40" />
+      </g>
+
+      <!-- platform and the great staircase -->
+      <rect class="s-dark" x="52" y="356" width="1096" height="64" />
+      <rect class="s-mid" x="492" y="356" width="216" height="13" />
+      <rect class="s-dark" x="476" y="369" width="248" height="13" />
+      <rect class="s-mid" x="460" y="382" width="280" height="13" />
+      <rect class="s-dark" x="444" y="395" width="312" height="13" />
+      <rect class="s-mid" x="428" y="408" width="344" height="12" />
+    </g>
+
+    <!-- rim light that arrives with the dawn -->
+    <g id="rim" opacity="0" stroke-linecap="square" fill="none">
+      <path d="M426,99 H774" stroke-width="3" />
+      <path d="M278,249 H484 M716,249 H922" stroke-width="2.5" />
+      <path d="M52,303 H292 M908,303 H1148" stroke-width="2" />
+      <path d="M492,357 H708" stroke-width="2" />
+    </g>
+    <g id="doorBeam" opacity="0" aria-hidden="true">
+      <ellipse cx="600" cy="372" rx="150" ry="26" fill="#ffc76a" filter="url(#soften)" />
+    </g>
+  </svg>
+</div>
+
+<!-- ── content ────────────────────────────────────────────── -->
+<main>
+
+  <section class="screen">
+    <header class="masthead">
+      <p class="masthead__he" lang="he" dir="rtl">תִּשְׁעָה בְּאָב · תשפ״ו</p>
+      <p class="masthead__en">Montreal <span class="dot"></span> <span id="clock">--:--</span></p>
+    </header>
+
+    <div class="count" id="countBlock">
+      <p class="count__label" id="countLabel">The fast ends in</p>
+      <div class="count__digits" id="digits" role="timer" aria-live="polite" aria-atomic="true">
+        <span class="unit"><b id="hh">00</b><i>hours</i></span>
+        <span class="sep">:</span>
+        <span class="unit"><b id="mm">00</b><i>minutes</i></span>
+        <span class="sep">:</span>
+        <span class="unit"><b id="ss">00</b><i>seconds</i></span>
+      </div>
+      <p class="count__at">Tzeis <b>9:32 PM</b>, Thursday July 23</p>
+    </div>
+
+    <div class="done" id="doneBlock" hidden>
+      <p class="done__he" lang="he" dir="rtl">נַחֲמוּ נַחֲמוּ עַמִּי</p>
+      <p class="done__en">The fast is over.</p>
+      <p class="done__sub">Many say Kiddush Levana tonight.</p>
+    </div>
+
+    <div class="track" id="track">
+      <div class="track__rail"><div class="track__fill" id="trackFill"></div></div>
+      <ol class="track__marks" id="marks"></ol>
+      <p class="track__meta"><span id="pct">0%</span> of the fast behind us</p>
+    </div>
+
+    <a class="scroll" href="#reflect" aria-label="Read on">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+    </a>
+  </section>
+
+  <section class="reflect" id="reflect">
+    <figure class="quote" id="quote">
+      <blockquote>
+        <p class="quote__he" lang="he" dir="rtl" id="qHe"></p>
+        <p class="quote__en" id="qEn"></p>
+      </blockquote>
+      <figcaption id="qSrc"></figcaption>
+    </figure>
+
+    <div class="pips" id="pips" role="tablist" aria-label="Verses"></div>
+  </section>
+
+  <section class="ledger" id="ledger">
+    <h2 class="ledger__title">Tonight and tomorrow</h2>
+    <dl class="times" id="times"></dl>
+
+    <p class="since">
+      <span class="since__num" id="sinceNum">1,956</span>
+      <span class="since__cap">years since the churban of the second Beis Hamikdash. We are still counting, and still building.</span>
+    </p>
+
+    <div class="tools">
+      <button class="btn" id="motionBtn" type="button" aria-pressed="false">Ambient motion: on</button>
+      <button class="btn" id="installBtn" type="button" hidden>Add to home screen</button>
+    </div>
+    <p class="hint" id="hint">On iPhone: Share, then Add to Home Screen. It works offline once loaded.</p>
+  </section>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
