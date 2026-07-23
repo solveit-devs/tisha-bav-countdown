@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Tisha B'Av — widget</title>
+<meta name="theme-color" content="#0a0a0a" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600&family=Instrument+Serif&family=Suez+One&display=swap" rel="stylesheet" />
+<style>
+  /* Sized in vmin/vh so it holds up at any widget shape the launcher gives it. */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #0a0a0a;
+    color: #edeae3;
+    font-family: "Assistant", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .w {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 4.5% 5.5%;
+  }
+
+  .w__shot {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 60%;
+    filter: brightness(.6) saturate(.78);
+    z-index: 0;
+  }
+
+  .w__veil {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      linear-gradient(90deg, rgba(10,10,10,.86) 0%, rgba(10,10,10,.45) 46%, rgba(10,10,10,.1) 100%),
+      linear-gradient(180deg, rgba(10,10,10,.6) 0%, rgba(10,10,10,.24) 38%, rgba(10,10,10,.84) 100%);
+  }
+
+  .w__ember {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    opacity: 0;
+    background: radial-gradient(120% 60% at 14% 108%, rgba(212,112,58,.55) 0%, transparent 74%);
+  }
+
+  .w__he {
+    position: absolute;
+    z-index: 2;
+    right: 4%;
+    bottom: 3%;
+    font-family: "Suez One", Georgia, serif;
+    font-size: 19vmin;
+    line-height: .88;
+    color: rgba(237,234,227,.72);
+    text-shadow: 0 1px 14px rgba(6,6,8,.9);
+  }
+
+  .row { position: relative; z-index: 3; }
+
+  .kicker {
+    font-size: max(8px, 3.4vmin);
+    font-weight: 400;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: rgba(237,234,227,.6);
+    white-space: nowrap;
+  }
+
+  .count {
+    font-family: "Instrument Serif", Georgia, serif;
+    font-size: 25vmin;
+    line-height: .9;
+    letter-spacing: -.02em;
+    font-variant-numeric: tabular-nums lining-nums;
+    white-space: nowrap;
+    text-shadow: 0 2px 16px rgba(6,6,8,.8);
+  }
+
+  .count i { font-style: normal; color: rgba(237,234,227,.55); }
+
+  .stage {
+    font-family: "Instrument Serif", Georgia, serif;
+    font-size: max(11px, 5vmin);
+    color: rgba(237,234,227,.72);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 1px 10px rgba(6,6,8,.8);
+  }
+
+  body.warm .stage { color: #f0b483; }
+
+  .done {
+    font-family: "Suez One", Georgia, serif;
+    font-size: 11vmin;
+    line-height: 1.2;
+    color: #f0b483;
+    text-shadow: 0 2px 16px rgba(6,6,8,.8);
+  }
+
+  /* Short, wide widgets: drop the stage line and shrink the Hebrew. */
+  @media (max-aspect-ratio: 5/1) and (max-height: 130px) {
+    .stage { display: none; }
+    .w__he { font-size: 34vmin; }
+    .count { font-size: 44vmin; }
+  }
+</style>
+</head>
+<body>
+
+<div class="w">
+  <img class="w__shot" id="shot" src="img/beis-hamikdash.jpg" alt="" />
+  <div class="w__veil"></div>
+  <div class="w__ember" id="ember"></div>
+  <p class="w__he" id="he" lang="he" dir="rtl">אֵיכָה</p>
+
+  <p class="row kicker" id="kicker">Tisha B'Av · fast ends 9:32 PM</p>
+
+  <p class="row count" id="count"><span id="hh">00</span><i>:</i><span id="mm">00</span><i>:</i><span id="ss">00</span></p>
+  <p class="row done" id="done" hidden lang="he" dir="rtl">נַחֲמוּ נַחֲמוּ עַמִּי</p>
+
+  <p class="row stage" id="stage">The night of Eicha.</p>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var FAST_START = Date.UTC(2026, 6, 23,  0, 26);
+  var SUNRISE    = Date.UTC(2026, 6, 23,  9, 26);
+  var CHATZOS    = Date.UTC(2026, 6, 23, 16, 56);
+  var SHKIA      = Date.UTC(2026, 6, 24,  0, 25);
+  var FAST_END   = Date.UTC(2026, 6, 24,  1, 32);
+
+  var STAGES = [
+    [FAST_START, 'The night of Eicha.'],
+    [SUNRISE,    'Morning. Kinnos.'],
+    [CHATZOS,    'Chatzos has passed.'],
+    [SHKIA,      'The sun is down. Not yet.'],
+    [FAST_END,   'It is over.']
+  ];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var forced = null;
+  var q = /[?&]p=([0-9.]+)/.exec(location.search);
+  if (q) forced = Math.max(0, Math.min(1, parseFloat(q[1])));
+
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function clamp01(v) { return Math.max(0, Math.min(1, v)); }
+  function ramp(v, a, b) { return clamp01((v - a) / (b - a)); }
+
+  function tick() {
+    var span = FAST_END - FAST_START;
+    var now = forced === null ? Date.now() : FAST_START + span * forced;
+    var p = clamp01((now - FAST_START) / span);
+    var remain = FAST_END - now;
+
+    var lift = Math.pow(p, 1.35);
+    $('shot').style.filter = 'brightness(' + (.6 + lift * .5).toFixed(3) +
+                             ') saturate(' + (.78 + lift * .5).toFixed(3) + ')';
+    $('ember').style.opacity = (ramp(now, CHATZOS, FAST_END) * .9).toFixed(3);
+    $('he').style.opacity = (1 - ramp(now, CHATZOS, SHKIA)).toFixed(3);
+    document.body.classList.toggle('warm', now >= CHATZOS);
+
+    var text = STAGES[0][1];
+    for (var i = 0; i < STAGES.length; i++) if (now >= STAGES[i][0]) text = STAGES[i][1];
+    $('stage').textContent = text;
+
+    if (remain <= 0) {
+      $('count').hidden = true;
+      $('done').hidden = false;
+      $('kicker').textContent = "Tisha B'Av · the fast is over";
+      return;
+    }
+
+    var t = Math.floor(remain / 1000);
+    $('hh').textContent = pad(Math.floor(t / 3600));
+    $('mm').textContent = pad(Math.floor((t % 3600) / 60));
+    $('ss').textContent = pad(t % 60);
+  }
+
+  tick();
+  setInterval(tick, 1000);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) tick(); });
+})();
+</script>
+</body>
+</html>
