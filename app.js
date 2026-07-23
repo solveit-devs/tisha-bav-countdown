@@ -1,35 +1,46 @@
 /* Tisha B'Av 5786 — countdown to tzeis.
-   All instants are fixed UTC so the page is correct from any device clock/zone. */
+   All instants are fixed UTC so the page is correct from any device clock.
+
+   The page keeps the fast: it opens on Eicha with no colour and no image,
+   and is given things back as the real milestones pass. */
 
 (function () {
   'use strict';
 
-  // ── the day ──────────────────────────────────────────────
   // Eastern Daylight Time = UTC-4.
   var FAST_START = Date.UTC(2026, 6, 23,  0, 26); // Wed Jul 22, 8:26 PM  — shkia
-  var CHATZOS    = Date.UTC(2026, 6, 23, 16, 56); // Thu Jul 23, 12:56 PM — halachic midday
-  var SHKIA      = Date.UTC(2026, 6, 24,  0, 25); // Thu Jul 23, 8:25 PM  — sunset
-  var FAST_END   = Date.UTC(2026, 6, 24,  1, 32); // Thu Jul 23, 9:32 PM  — tzeis, fast ends
+  var SUNRISE    = Date.UTC(2026, 6, 23,  9, 26); // Thu Jul 23, 5:26 AM
+  var CHATZOS    = Date.UTC(2026, 6, 23, 16, 56); // Thu Jul 23, 12:56 PM
+  var SHKIA      = Date.UTC(2026, 6, 24,  0, 25); // Thu Jul 23, 8:25 PM
+  var FAST_END   = Date.UTC(2026, 6, 24,  1, 32); // Thu Jul 23, 9:32 PM — tzeis
 
   var $ = function (id) { return document.getElementById(id); };
   var body = document.body;
 
   // ?p=0.85 pins the clock to a point in the fast, for checking how it looks.
   var forced = null;
-  var m = /[?&]p=([0-9.]+)/.exec(window.location.search);
-  if (m) forced = Math.max(0, Math.min(1, parseFloat(m[1])));
+  var qp = /[?&]p=([0-9.]+)/.exec(window.location.search);
+  if (qp) forced = Math.max(0, Math.min(1, parseFloat(qp[1])));
 
-  // ── verses ───────────────────────────────────────────────
+  // ── what the page says at each point in the day ──────────
+  var STAGES = [
+    { at: FAST_START, text: 'The night of Eicha.' },
+    { at: SUNRISE,    text: 'Morning. Kinnos.' },
+    { at: CHATZOS,    text: 'Chatzos has passed.' },
+    { at: SHKIA,      text: 'The sun is down. Not yet.' },
+    { at: FAST_END,   text: 'It is over.' }
+  ];
+
   var VERSES = [
+    {
+      he: 'אֵיכָה יָשְׁבָה בָדָד הָעִיר רַבָּתִי עָם',
+      en: 'How does she sit alone, the city once full of people.',
+      src: 'Eichah 1:1'
+    },
     {
       he: 'הֲשִׁיבֵנוּ ה\' אֵלֶיךָ וְנָשׁוּבָה, חַדֵּשׁ יָמֵינוּ כְּקֶדֶם',
       en: 'Bring us back to You, and we will return. Renew our days as of old.',
       src: 'Eichah 5:21'
-    },
-    {
-      he: 'בּוֹנֵה יְרוּשָׁלַיִם ה\', נִדְחֵי יִשְׂרָאֵל יְכַנֵּס',
-      en: 'The Builder of Jerusalem is Hashem. He gathers in the scattered of Israel.',
-      src: 'Tehillim 147:2'
     },
     {
       he: 'כׇּל הַמִּתְאַבֵּל עַל יְרוּשָׁלַיִם זוֹכֶה וְרוֹאֶה בְּשִׂמְחָתָהּ',
@@ -42,19 +53,19 @@
       src: 'Tehillim 137:5'
     },
     {
+      he: 'בּוֹנֵה יְרוּשָׁלַיִם ה\', נִדְחֵי יִשְׂרָאֵל יְכַנֵּס',
+      en: 'The Builder of Jerusalem is Hashem. He gathers in the scattered of Israel.',
+      src: 'Tehillim 147:2'
+    },
+    {
       he: 'הָפַכְתָּ מִסְפְּדִי לְמָחוֹל לִי, פִּתַּחְתָּ שַׂקִּי וַתְּאַזְּרֵנִי שִׂמְחָה',
       en: 'You turned my mourning into dancing. You loosened my sackcloth and girded me with joy.',
       src: 'Tehillim 30:12'
     },
     {
-      he: 'צוֹם הָרְבִיעִי וְצוֹם הַחֲמִישִׁי יִהְיֶה לְבֵית יְהוּדָה לְשָׂשׂוֹן וּלְשִׂמְחָה וּלְמֹעֲדִים טוֹבִים',
-      en: 'The fast of the fourth month and the fast of the fifth will become, for the house of Judah, days of gladness and joy and happy festivals.',
+      he: 'צוֹם הָרְבִיעִי וְצוֹם הַחֲמִישִׁי יִהְיֶה לְבֵית יְהוּדָה לְשָׂשׂוֹן וּלְשִׂמְחָה',
+      en: 'The fast of the fourth month and the fast of the fifth will become, for the house of Judah, days of gladness and joy.',
       src: 'Zechariah 8:19'
-    },
-    {
-      he: 'קוּמִי אוֹרִי כִּי בָא אוֹרֵךְ, וּכְבוֹד ה\' עָלַיִךְ זָרָח',
-      en: 'Arise, shine, for your light has come, and the glory of Hashem shines upon you.',
-      src: 'Yeshayahu 60:1'
     },
     {
       he: 'נַחֲמוּ נַחֲמוּ עַמִּי, יֹאמַר אֱלֹקֵיכֶם',
@@ -63,24 +74,6 @@
     }
   ];
 
-  // ── milestone legend ─────────────────────────────────────
-  var MARKS = [
-    { at: FAST_START, cap: 'Eicha',   sub: '8:26 PM' },
-    { at: CHATZOS,    cap: 'Chatzos', sub: '12:56 PM' },
-    { at: SHKIA,      cap: 'Shkia',   sub: '8:25 PM' },
-    { at: FAST_END,   cap: 'Tzeis',   sub: '9:32 PM' }
-  ];
-
-  (function buildMarks() {
-    var ol = $('marks');
-    MARKS.forEach(function (m) {
-      var li = document.createElement('li');
-      li.innerHTML = m.cap + '<small>' + m.sub + '</small>';
-      ol.appendChild(li);
-    });
-  })();
-
-  // ── the times ledger ─────────────────────────────────────
   var ROWS = [
     { label: 'Shkia, the fast begins', note: 'Wednesday', at: FAST_START, time: '8:26 PM' },
     { label: 'Chatzos', note: 'Thursday, halachic midday', at: CHATZOS, time: '12:56 PM' },
@@ -102,44 +95,34 @@
     });
   })();
 
-  // ── verse rotation ───────────────────────────────────────
+  // ── verses ───────────────────────────────────────────────
   var qIndex = 0, qTimer = null;
-  var quote = $('quote'), qHe = $('qHe'), qEn = $('qEn'), qSrc = $('qSrc'), pips = $('pips');
-
-  VERSES.forEach(function (v, i) {
-    var b = document.createElement('button');
-    b.type = 'button';
-    b.setAttribute('role', 'tab');
-    b.setAttribute('aria-label', v.src);
-    b.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
-    b.addEventListener('click', function () { showVerse(i, true); });
-    pips.appendChild(b);
-  });
+  var verse = $('verse'), qHe = $('qHe'), qEn = $('qEn'), qSrc = $('qSrc'), qCount = $('qCount');
 
   function paintVerse(i) {
     qHe.textContent = VERSES[i].he;
     qEn.textContent = VERSES[i].en;
     qSrc.textContent = VERSES[i].src;
-    var btns = pips.children;
-    for (var k = 0; k < btns.length; k++) {
-      btns[k].setAttribute('aria-selected', k === i ? 'true' : 'false');
-    }
+    qCount.textContent = (i + 1) + ' / ' + VERSES.length;
   }
 
   function showVerse(i, manual) {
     qIndex = (i + VERSES.length) % VERSES.length;
-    quote.classList.add('is-swapping');
+    verse.classList.add('is-swapping');
     setTimeout(function () {
       paintVerse(qIndex);
-      quote.classList.remove('is-swapping');
-    }, 420);
+      verse.classList.remove('is-swapping');
+    }, 400);
     if (manual) restartVerseTimer();
   }
 
   function restartVerseTimer() {
     clearInterval(qTimer);
-    qTimer = setInterval(function () { showVerse(qIndex + 1, false); }, 13000);
+    qTimer = setInterval(function () { showVerse(qIndex + 1, false); }, 14000);
   }
+
+  $('qNext').addEventListener('click', function () { showVerse(qIndex + 1, true); });
+  $('qPrev').addEventListener('click', function () { showVerse(qIndex - 1, true); });
 
   paintVerse(0);
   restartVerseTimer();
@@ -150,49 +133,48 @@
 
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
 
+  function clamp01(v) { return Math.max(0, Math.min(1, v)); }
+
+  function ramp(v, from, to) { return clamp01((v - from) / (to - from)); }
+
   function etClock(now) {
     return new Intl.DateTimeFormat('en-US', {
-      timeZone: 'America/Toronto',
-      hour: 'numeric', minute: '2-digit'
+      timeZone: 'America/Toronto', hour: 'numeric', minute: '2-digit'
     }).format(now);
   }
 
-  function setSkyLayer(el, value) {
-    el.style.opacity = Math.max(0, Math.min(1, value)).toFixed(3);
+  function paintField(now, p) {
+    // Eicha holds the field until past chatzos, then lets go.
+    $('fieldMourn').style.opacity = (1 - ramp(now, CHATZOS, SHKIA)).toFixed(3);
+
+    // Colour is withheld until chatzos, then arrives slowly.
+    var ember = ramp(now, CHATZOS, FAST_END);
+    $('fieldEmber').style.opacity = (ember * .9).toFixed(3);
+    body.classList.toggle('has-ember', now >= CHATZOS);
+
+    // The Beis Hamikdash only at the very end.
+    $('fieldPhoto').style.opacity = (Math.pow(ramp(now, SHKIA, FAST_END), 1.7) * .72).toFixed(3);
+
+    $('lineDone').style.width = (p * 100).toFixed(2) + '%';
+    $('lineNow').style.left = (p * 100).toFixed(2) + '%';
+    $('pct').textContent = Math.floor(p * 100) + '%';
   }
 
-  function ramp(p, from, to) {
-    return Math.max(0, Math.min(1, (p - from) / (to - from)));
-  }
-
-  function paintAtmosphere(p) {
-    // Light arrives late, the way dawn actually behaves.
-    var glow = Math.pow(p, 1.7);
-
-    // The Kotel holds the frame until past chatzos, then the Beis
-    // Hamikdash comes up in its place.
-    var handover = ramp(p, .5, .93);
-    $('shotTemple').style.opacity = handover.toFixed(3);
-    $('shotKotel').style.opacity = (1 - handover).toFixed(3);
-
-    // Both photographs are graded from near-dark up to full light.
-    var bright = (.67 + glow * .68).toFixed(3);
-    var sat = (.62 + glow * .78).toFixed(3);
-    var grade = 'brightness(' + bright + ') saturate(' + sat + ') contrast(1.04)';
-    $('shotKotel').style.filter = grade;
-    $('shotTemple').style.filter = grade;
-
-    setSkyLayer($('gradeCool'), 1 - ramp(p, .15, 1) * .88);
-    setSkyLayer($('gradeWarm'), Math.pow(p, 1.9));
+  function currentStage(now) {
+    var text = STAGES[0].text;
+    for (var i = 0; i < STAGES.length; i++) {
+      if (now >= STAGES[i].at) text = STAGES[i].text;
+    }
+    return text;
   }
 
   function finish() {
     if (finished) return;
     finished = true;
-    $('countBlock').hidden = true;
+    $('digits').hidden = true;
+    $('heroAt').hidden = true;
+    $('heroLabel').textContent = 'Tzeis, 9:32 PM';
     $('doneBlock').hidden = false;
-    $('countLabel').textContent = '';
-    $('track').querySelector('.track__meta').innerHTML = '<span>Complete</span> · may this be the last one';
     document.title = 'The fast is over';
   }
 
@@ -200,18 +182,12 @@
     var span = FAST_END - FAST_START;
     var now = forced === null ? Date.now() : FAST_START + span * forced;
     var remain = FAST_END - now;
-    var p = Math.max(0, Math.min(1, (now - FAST_START) / span));
+    var p = clamp01((now - FAST_START) / span);
 
-    paintAtmosphere(p);
-    $('trackFill').style.transform = 'scaleX(' + p.toFixed(4) + ')';
-    $('pct').textContent = Math.floor(p * 100) + '%';
+    paintField(now, p);
     $('clock').textContent = etClock(new Date(now));
+    $('stage').textContent = currentStage(now);
 
-    // legend + ledger state
-    var marks = $('marks').children;
-    for (var i = 0; i < MARKS.length; i++) {
-      marks[i].classList.toggle('is-past', now >= MARKS[i].at);
-    }
     var rows = $('times').children;
     var nextFound = false;
     for (var k = 0; k < ROWS.length; k++) {
@@ -252,22 +228,20 @@
   try { stored = localStorage.getItem('tb-motion'); } catch (e) {}
 
   function applyMotion(state) {
-    // state: 'on' | 'off' | null (follow the system)
     body.classList.remove('is-moving', 'is-still');
     if (state === 'on') body.classList.add('is-moving');
     if (state === 'off') body.classList.add('is-still');
-
-    var effective = state === 'on' ? true : state === 'off' ? false : !prefersStill.matches;
-    motionBtn.textContent = 'Ambient motion: ' + (effective ? 'on' : 'off');
-    motionBtn.setAttribute('aria-pressed', effective ? 'true' : 'false');
-    return effective;
+    var on = state === 'on' ? true : state === 'off' ? false : !prefersStill.matches;
+    motionBtn.textContent = 'Ambient motion: ' + (on ? 'on' : 'off');
+    motionBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    return on;
   }
 
-  var effectiveMotion = applyMotion(stored);
+  var motionOn = applyMotion(stored);
 
   motionBtn.addEventListener('click', function () {
-    var next = effectiveMotion ? 'off' : 'on';
-    effectiveMotion = applyMotion(next);
+    var next = motionOn ? 'off' : 'on';
+    motionOn = applyMotion(next);
     try { localStorage.setItem('tb-motion', next); } catch (e) {}
   });
 
@@ -285,10 +259,7 @@
   installBtn.addEventListener('click', function () {
     if (!deferred) return;
     deferred.prompt();
-    deferred.userChoice.then(function () {
-      deferred = null;
-      installBtn.hidden = true;
-    });
+    deferred.userChoice.then(function () { deferred = null; installBtn.hidden = true; });
   });
 
   if ('serviceWorker' in navigator) {
@@ -297,7 +268,6 @@
     });
   }
 
-  // Keep the countdown honest after the phone sleeps.
   document.addEventListener('visibilitychange', function () {
     if (!document.hidden) tick();
   });

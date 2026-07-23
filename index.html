@@ -4,10 +4,10 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Tisha B'Av 5786</title>
-<meta name="description" content="A live countdown to the end of the fast, and to the rebuilding." />
+<meta name="description" content="A countdown to the end of the fast. From Eicha to Nechama." />
 
 <link rel="manifest" href="manifest.webmanifest" />
-<meta name="theme-color" content="#05070f" />
+<meta name="theme-color" content="#0a0a0a" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -17,91 +17,98 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Frank+Ruhl+Libre:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600&family=Instrument+Serif:ital@0;1&family=Suez+One&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-<!-- ── the scene ──────────────────────────────────────────
-     Opens on the Kotel at night. As the fast burns down it gives way
-     to the Beis Hamikdash, and the light comes up. -->
-<div class="scene" aria-hidden="true">
-  <div class="scene__stage">
-    <img class="scene__shot" id="shotKotel" src="img/kotel-night.jpg" alt="" decoding="async" />
-    <img class="scene__shot" id="shotTemple" src="img/beis-hamikdash.jpg" alt="" decoding="async" />
-  </div>
-  <div class="scene__grade scene__grade--cool" id="gradeCool"></div>
-  <div class="scene__grade scene__grade--warm" id="gradeWarm"></div>
-  <div class="scene__scrim"></div>
+<!-- ── the field ──────────────────────────────────────────
+     The page keeps the fast. It opens on Eicha and nothing else,
+     and is given things back as the real milestones pass. -->
+<div class="field" aria-hidden="true">
+  <img class="field__photo" id="fieldPhoto" src="img/beis-hamikdash.jpg" alt="" decoding="async" />
+  <p class="field__he" id="fieldMourn" lang="he" dir="rtl">אֵיכָה</p>
+  <div class="field__ember" id="fieldEmber"></div>
+  <div class="field__veil"></div>
 </div>
 
-<!-- ── content ────────────────────────────────────────────── -->
+<header class="bar">
+  <span class="bar__title">Tisha B'Av <em>5786</em></span>
+  <span class="bar__clock"><span id="clock">--:--</span> Montreal</span>
+</header>
+
 <main>
 
-  <section class="screen">
-    <header class="masthead">
-      <p class="masthead__he" lang="he" dir="rtl">תִּשְׁעָה בְּאָב · תשפ״ו</p>
-      <p class="masthead__en">Montreal <span class="dot"></span> <span id="clock">--:--</span></p>
-    </header>
+  <section class="hero">
 
-    <div class="count" id="countBlock">
-      <p class="count__label" id="countLabel">The fast ends in</p>
-      <div class="count__digits" id="digits" role="timer" aria-live="polite" aria-atomic="true">
-        <span class="unit"><b id="hh">00</b><i>hours</i></span>
-        <span class="sep">:</span>
-        <span class="unit"><b id="mm">00</b><i>minutes</i></span>
-        <span class="sep">:</span>
-        <span class="unit"><b id="ss">00</b><i>seconds</i></span>
+    <div class="hero__body">
+      <p class="hero__label" id="heroLabel">The fast ends in</p>
+
+      <p class="hero__count" id="digits" role="timer" aria-live="polite" aria-atomic="true">
+        <b id="hh">00</b><i>:</i><b id="mm">00</b><i>:</i><b id="ss">00</b>
+      </p>
+
+      <p class="hero__at" id="heroAt">Thursday night, <b>9:32 PM</b></p>
+
+      <div class="hero__done" id="doneBlock" hidden>
+        <p class="hero__doneHe" lang="he" dir="rtl">נַחֲמוּ נַחֲמוּ עַמִּי</p>
+        <p class="hero__doneEn">The fast is over. Many say Kiddush Levana tonight.</p>
       </div>
-      <p class="count__at">Tzeis <b>9:32 PM</b>, Thursday July 23</p>
     </div>
 
-    <div class="done" id="doneBlock" hidden>
-      <p class="done__he" lang="he" dir="rtl">נַחֲמוּ נַחֲמוּ עַמִּי</p>
-      <p class="done__en">The fast is over.</p>
-      <p class="done__sub">Many say Kiddush Levana tonight.</p>
+    <div class="line">
+      <div class="line__rail">
+        <span class="line__done" id="lineDone"></span>
+        <span class="line__now" id="lineNow"></span>
+        <span class="line__tick" data-at="chatzos"></span>
+        <span class="line__tick" data-at="shkia"></span>
+      </div>
+      <p class="line__legend">
+        <span id="pct">0%</span> elapsed
+        <span class="sep">/</span> Chatzos 12:56
+        <span class="sep">/</span> Shkia 8:25
+        <span class="sep">/</span> Tzeis 9:32
+      </p>
+      <p class="stage" id="stage">The night of Eicha.</p>
     </div>
 
-    <div class="track" id="track">
-      <div class="track__rail"><div class="track__fill" id="trackFill"></div></div>
-      <ol class="track__marks" id="marks"></ol>
-      <p class="track__meta"><span id="pct">0%</span> of the fast behind us</p>
-    </div>
-
-    <a class="scroll" href="#reflect" aria-label="Read on">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
-    </a>
+    <a class="more" href="#verses">Read on</a>
   </section>
 
-  <section class="reflect" id="reflect">
-    <figure class="quote" id="quote">
+  <section class="verses" id="verses">
+    <figure class="verse" id="verse">
       <blockquote>
-        <p class="quote__he" lang="he" dir="rtl" id="qHe"></p>
-        <p class="quote__en" id="qEn"></p>
+        <p class="verse__he" lang="he" dir="rtl" id="qHe"></p>
+        <p class="verse__en" id="qEn"></p>
       </blockquote>
       <figcaption id="qSrc"></figcaption>
     </figure>
-
-    <div class="pips" id="pips" role="tablist" aria-label="Verses"></div>
+    <div class="verse__nav">
+      <button class="ghost" id="qPrev" type="button" aria-label="Previous verse">Back</button>
+      <span class="verse__count" id="qCount">1 / 8</span>
+      <button class="ghost" id="qNext" type="button" aria-label="Next verse">Next</button>
+    </div>
   </section>
 
   <section class="ledger" id="ledger">
-    <h2 class="ledger__title">Tonight and tomorrow</h2>
+    <img class="ledger__shot" src="img/kotel-night.jpg" alt="The Kotel at night" loading="lazy" decoding="async" />
+
+    <h2>Tonight and tomorrow</h2>
     <dl class="times" id="times"></dl>
 
     <p class="since">
-      <span class="since__num" id="sinceNum">1,956</span>
-      <span class="since__cap">years since the churban of the second Beis Hamikdash. We are still counting, and still building.</span>
+      <b id="sinceNum">1,956</b>
+      years since the churban of the second Beis Hamikdash. Still counting, still building.
     </p>
 
     <div class="tools">
-      <button class="btn" id="motionBtn" type="button" aria-pressed="false">Ambient motion: on</button>
-      <button class="btn" id="installBtn" type="button" hidden>Add to home screen</button>
+      <button class="ghost" id="motionBtn" type="button" aria-pressed="false">Ambient motion: on</button>
+      <button class="ghost" id="installBtn" type="button" hidden>Add to home screen</button>
     </div>
     <p class="hint" id="hint">On iPhone: Share, then Add to Home Screen. It works offline once loaded.</p>
 
     <p class="credits">
-      Photographs: the Kotel at night by
+      Photographs from Wikimedia Commons: the Kotel at night by
       <a href="https://commons.wikimedia.org/wiki/File:Western_Wall_at_night_(20063).jpg">Rhododendrites</a>
       (CC BY-SA 4.0); the Beis Hamikdash, from the Holyland model of Second Temple Jerusalem at the
       Israel Museum, by <a href="https://commons.wikimedia.org/wiki/File:Second_Temple.jpg">Ariely</a>
