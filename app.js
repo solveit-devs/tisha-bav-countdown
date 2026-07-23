@@ -63,38 +63,6 @@
     }
   ];
 
-  // ── stars and rising light ───────────────────────────────
-  (function seedAtmosphere() {
-    var stars = $('stars');
-    var frag = document.createDocumentFragment();
-    var i, s, size;
-    for (i = 0; i < 110; i++) {
-      s = document.createElement('i');
-      size = Math.random() < .82 ? 1 : 2;
-      s.style.width = size + 'px';
-      s.style.height = size + 'px';
-      s.style.left = (Math.random() * 100).toFixed(2) + '%';
-      s.style.top = (Math.random() * 74).toFixed(2) + '%';
-      s.style.opacity = (.14 + Math.random() * .55).toFixed(2);
-      s.style.animationDelay = (Math.random() * 5).toFixed(2) + 's';
-      s.style.animationDuration = (3.4 + Math.random() * 4.5).toFixed(2) + 's';
-      frag.appendChild(s);
-    }
-    stars.appendChild(frag);
-
-    var motes = $('motes');
-    var m, f2 = document.createDocumentFragment();
-    for (i = 0; i < 16; i++) {
-      m = document.createElement('i');
-      m.style.left = (4 + Math.random() * 92).toFixed(2) + '%';
-      m.style.animationDuration = (20 + Math.random() * 26).toFixed(1) + 's';
-      m.style.animationDelay = (-Math.random() * 40).toFixed(1) + 's';
-      m.style.transform = 'scale(' + (.5 + Math.random()).toFixed(2) + ')';
-      f2.appendChild(m);
-    }
-    motes.appendChild(f2);
-  })();
-
   // ── milestone legend ─────────────────────────────────────
   var MARKS = [
     { at: FAST_START, cap: 'Eicha',   sub: '8:26 PM' },
@@ -193,32 +161,29 @@
     el.style.opacity = Math.max(0, Math.min(1, value)).toFixed(3);
   }
 
+  function ramp(p, from, to) {
+    return Math.max(0, Math.min(1, (p - from) / (to - from)));
+  }
+
   function paintAtmosphere(p) {
     // Light arrives late, the way dawn actually behaves.
     var glow = Math.pow(p, 1.7);
 
-    setSkyLayer($('skyDeep'),  Math.min(1, p * 2.1));
-    setSkyLayer($('skyDawn'),  Math.max(0, (p - .34) / .46));
-    setSkyLayer($('skyBreak'), Math.max(0, (p - .72) / .28));
+    // The Kotel holds the frame until past chatzos, then the Beis
+    // Hamikdash comes up in its place.
+    var handover = ramp(p, .5, .93);
+    $('shotTemple').style.opacity = handover.toFixed(3);
+    $('shotKotel').style.opacity = (1 - handover).toFixed(3);
 
-    $('stars').style.opacity = (1 - Math.max(0, (p - .45) / .5) * .92).toFixed(3);
+    // Both photographs are graded from near-dark up to full light.
+    var bright = (.67 + glow * .68).toFixed(3);
+    var sat = (.62 + glow * .78).toFixed(3);
+    var grade = 'brightness(' + bright + ') saturate(' + sat + ') contrast(1.04)';
+    $('shotKotel').style.filter = grade;
+    $('shotTemple').style.filter = grade;
 
-    $('halo').setAttribute('opacity', (.06 + glow * .86).toFixed(3));
-    $('hazeBand').setAttribute('opacity', (glow * .55).toFixed(3));
-    $('rim').setAttribute('opacity', (.14 + glow * .74).toFixed(3));
-    $('doorway').setAttribute('opacity', (.2 + glow * .8).toFixed(3));
-    $('doorBeam').setAttribute('opacity', (Math.pow(p, 3) * .8).toFixed(3));
-
-    // Windows and the roof spikes catch the light as the day turns.
-    var lit = p > .62;
-    var spikes = document.querySelectorAll('#spikes path');
-    for (var i = 0; i < spikes.length; i++) {
-      spikes[i].style.fill = lit ? 'var(--gold)' : '#050912';
-    }
-    var wins = document.querySelectorAll('#windows rect');
-    for (var j = 0; j < wins.length; j++) {
-      wins[j].style.fill = p > .35 ? 'rgba(255, 203, 122, ' + (glow * .72).toFixed(2) + ')' : '#050912';
-    }
+    setSkyLayer($('gradeCool'), 1 - ramp(p, .15, 1) * .88);
+    setSkyLayer($('gradeWarm'), Math.pow(p, 1.9));
   }
 
   function finish() {

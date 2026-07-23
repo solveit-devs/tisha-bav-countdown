@@ -1,5 +1,5 @@
 /* Offline shell. Bump CACHE when files change. */
-var CACHE = 'tishabav-5786-v1';
+var CACHE = 'tishabav-5786-v2';
 
 var SHELL = [
   './',
@@ -7,7 +7,8 @@ var SHELL = [
   './styles.css',
   './app.js',
   './manifest.webmanifest',
-  './icons/icon.svg',
+  './img/kotel-night.jpg',
+  './img/beis-hamikdash.jpg',
   './icons/icon-192.png',
   './icons/icon-512.png'
 ];

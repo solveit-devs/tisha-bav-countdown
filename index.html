@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Tisha B'Av" />
 <link rel="apple-touch-icon" href="icons/icon-192.png" />
-<link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+<link rel="icon" href="icons/icon-192.png" type="image/png" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -22,115 +22,17 @@
 </head>
 <body>
 
-<!-- ── atmosphere ─────────────────────────────────────────── -->
-<div class="sky" aria-hidden="true">
-  <div class="sky__layer sky__layer--night"></div>
-  <div class="sky__layer sky__layer--deep" id="skyDeep"></div>
-  <div class="sky__layer sky__layer--dawn" id="skyDawn"></div>
-  <div class="sky__layer sky__layer--break" id="skyBreak"></div>
-  <div class="stars" id="stars"></div>
-  <div class="motes" id="motes"></div>
-</div>
-
-<!-- ── horizon ────────────────────────────────────────────── -->
-<div class="horizon" aria-hidden="true">
-  <svg viewBox="0 0 1200 420" preserveAspectRatio="xMidYMax meet" role="img">
-    <defs>
-      <radialGradient id="halo" cx="50%" cy="62%" r="50%">
-        <stop offset="0%" stop-color="#ffcf7a" stop-opacity=".85" />
-        <stop offset="55%" stop-color="#e08a3c" stop-opacity=".28" />
-        <stop offset="100%" stop-color="#e08a3c" stop-opacity="0" />
-      </radialGradient>
-      <linearGradient id="doorGlow" x1="0" y1="1" x2="0" y2="0">
-        <stop offset="0%" stop-color="#ffe2a3" stop-opacity=".95" />
-        <stop offset="60%" stop-color="#ffb648" stop-opacity=".55" />
-        <stop offset="100%" stop-color="#ff9d2e" stop-opacity="0" />
-      </linearGradient>
-      <linearGradient id="haze" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#f0b877" stop-opacity="0" />
-        <stop offset="100%" stop-color="#f0b877" stop-opacity=".5" />
-      </linearGradient>
-      <filter id="soften" x="-40%" y="-40%" width="180%" height="180%">
-        <feGaussianBlur stdDeviation="9" />
-      </filter>
-    </defs>
-
-    <!-- glow behind the sanctuary -->
-    <circle id="halo" cx="600" cy="200" r="330" fill="url(#halo)" opacity="0" />
-
-    <!-- distant hills of Yerushalayim -->
-    <path class="hills" d="M0,308 Q140,262 292,296 Q430,326 546,288 Q672,246 806,292 Q944,338 1060,296 Q1140,268 1200,286 L1200,420 L0,420 Z" />
-
-    <!-- haze at the horizon -->
-    <rect id="hazeBand" x="0" y="250" width="1200" height="170" fill="url(#haze)" opacity="0" />
-
-    <g class="temple">
-      <!-- outer courtyard walls -->
-      <rect class="s-dark" x="52" y="302" width="240" height="54" />
-      <rect class="s-dark" x="908" y="302" width="240" height="54" />
-      <g class="s-dark">
-        <rect x="60" y="292" width="22" height="12" /><rect x="104" y="292" width="22" height="12" />
-        <rect x="148" y="292" width="22" height="12" /><rect x="192" y="292" width="22" height="12" />
-        <rect x="236" y="292" width="22" height="12" /><rect x="916" y="292" width="22" height="12" />
-        <rect x="960" y="292" width="22" height="12" /><rect x="1004" y="292" width="22" height="12" />
-        <rect x="1048" y="292" width="22" height="12" /><rect x="1092" y="292" width="22" height="12" />
-      </g>
-
-      <!-- side chambers -->
-      <rect class="s-mid" x="288" y="258" width="186" height="98" />
-      <rect class="s-mid" x="726" y="258" width="186" height="98" />
-      <rect class="s-mid" x="278" y="248" width="206" height="12" />
-      <rect class="s-mid" x="716" y="248" width="206" height="12" />
-
-      <!-- heichal body behind the porch -->
-      <rect class="s-mid" x="474" y="164" width="252" height="192" />
-
-      <!-- the porch: tall front facade -->
-      <rect class="s-light" x="440" y="112" width="320" height="244" />
-      <rect class="s-light" x="426" y="98" width="348" height="16" />
-
-      <!-- golden roof spikes -->
-      <g class="spikes" id="spikes">
-        <path d="M436,98 l9,-18 l9,18 Z" /><path d="M466,98 l9,-18 l9,18 Z" />
-        <path d="M496,98 l9,-18 l9,18 Z" /><path d="M526,98 l9,-18 l9,18 Z" />
-        <path d="M556,98 l9,-18 l9,18 Z" /><path d="M586,98 l9,-18 l9,18 Z" />
-        <path d="M616,98 l9,-18 l9,18 Z" /><path d="M646,98 l9,-18 l9,18 Z" />
-        <path d="M676,98 l9,-18 l9,18 Z" /><path d="M706,98 l9,-18 l9,18 Z" />
-        <path d="M736,98 l9,-18 l9,18 Z" />
-      </g>
-
-      <!-- the great doorway -->
-      <rect id="doorway" x="546" y="196" width="108" height="160" fill="url(#doorGlow)" opacity=".08" />
-      <rect class="s-light" x="532" y="182" width="136" height="16" />
-
-      <!-- narrow windows -->
-      <g id="windows">
-        <rect x="480" y="140" width="15" height="40" /><rect x="705" y="140" width="15" height="40" />
-        <rect x="322" y="286" width="15" height="40" /><rect x="366" y="286" width="15" height="40" />
-        <rect x="410" y="286" width="15" height="40" /><rect x="775" y="286" width="15" height="40" />
-        <rect x="819" y="286" width="15" height="40" /><rect x="863" y="286" width="15" height="40" />
-      </g>
-
-      <!-- platform and the great staircase -->
-      <rect class="s-dark" x="52" y="356" width="1096" height="64" />
-      <rect class="s-mid" x="492" y="356" width="216" height="13" />
-      <rect class="s-dark" x="476" y="369" width="248" height="13" />
-      <rect class="s-mid" x="460" y="382" width="280" height="13" />
-      <rect class="s-dark" x="444" y="395" width="312" height="13" />
-      <rect class="s-mid" x="428" y="408" width="344" height="12" />
-    </g>
-
-    <!-- rim light that arrives with the dawn -->
-    <g id="rim" opacity="0" stroke-linecap="square" fill="none">
-      <path d="M426,99 H774" stroke-width="3" />
-      <path d="M278,249 H484 M716,249 H922" stroke-width="2.5" />
-      <path d="M52,303 H292 M908,303 H1148" stroke-width="2" />
-      <path d="M492,357 H708" stroke-width="2" />
-    </g>
-    <g id="doorBeam" opacity="0" aria-hidden="true">
-      <ellipse cx="600" cy="372" rx="150" ry="26" fill="#ffc76a" filter="url(#soften)" />
-    </g>
-  </svg>
+<!-- ── the scene ──────────────────────────────────────────
+     Opens on the Kotel at night. As the fast burns down it gives way
+     to the Beis Hamikdash, and the light comes up. -->
+<div class="scene" aria-hidden="true">
+  <div class="scene__stage">
+    <img class="scene__shot" id="shotKotel" src="img/kotel-night.jpg" alt="" decoding="async" />
+    <img class="scene__shot" id="shotTemple" src="img/beis-hamikdash.jpg" alt="" decoding="async" />
+  </div>
+  <div class="scene__grade scene__grade--cool" id="gradeCool"></div>
+  <div class="scene__grade scene__grade--warm" id="gradeWarm"></div>
+  <div class="scene__scrim"></div>
 </div>
 
 <!-- ── content ────────────────────────────────────────────── -->
@@ -197,6 +99,14 @@
       <button class="btn" id="installBtn" type="button" hidden>Add to home screen</button>
     </div>
     <p class="hint" id="hint">On iPhone: Share, then Add to Home Screen. It works offline once loaded.</p>
+
+    <p class="credits">
+      Photographs: the Kotel at night by
+      <a href="https://commons.wikimedia.org/wiki/File:Western_Wall_at_night_(20063).jpg">Rhododendrites</a>
+      (CC BY-SA 4.0); the Beis Hamikdash, from the Holyland model of Second Temple Jerusalem at the
+      Israel Museum, by <a href="https://commons.wikimedia.org/wiki/File:Second_Temple.jpg">Ariely</a>
+      (CC BY 3.0).
+    </p>
   </section>
 
 </main>

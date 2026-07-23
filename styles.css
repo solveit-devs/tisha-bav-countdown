@@ -38,112 +38,77 @@ body {
   line-height: 1.65;
 }
 
-/* ── atmosphere ─────────────────────────────────────────── */
+/* ── the scene ──────────────────────────────────────────── */
 
-.sky {
+.scene {
   position: fixed;
   inset: 0;
   z-index: 0;
+  overflow: hidden;
   pointer-events: none;
+  background: var(--ink);
 }
 
-.sky__layer {
+/* The photograph sits as a band on the lower half and dissolves upward
+   into the night, so the countdown always has clean dark space to live on. */
+.scene__stage {
   position: absolute;
-  inset: 0;
-  will-change: opacity;
-}
-
-.sky__layer--night {
-  background:
-    radial-gradient(80% 34% at 50% 100%, rgba(94, 74, 120, .34) 0%, rgba(30, 30, 62, .18) 46%, transparent 78%),
-    radial-gradient(120% 80% at 50% 100%, #101a33 0%, #070c18 45%, #04060d 100%);
-}
-
-.sky__layer--deep {
-  opacity: 0;
-  background:
-    radial-gradient(110% 70% at 50% 102%, #2a2140 0%, #131630 48%, #06080f 100%);
-}
-
-.sky__layer--dawn {
-  opacity: 0;
-  background:
-    radial-gradient(104% 56% at 50% 110%, #7d3f45 0%, #45284a 40%, #131532 74%, transparent 100%);
-}
-
-/* The break of light stays low, a glow at the horizon rather than a flood.
-   Keeps the silhouette dark and the text legible at the very end. */
-.sky__layer--break {
-  opacity: 0;
-  background:
-    radial-gradient(98% 50% at 50% 112%, #ffd79a 0%, #e78b3c 26%, #a4485c 54%, #3d2a55 80%, transparent 100%);
-}
-
-.stars {
-  position: absolute;
-  inset: 0;
-  will-change: opacity;
-}
-
-.stars i {
-  position: absolute;
-  display: block;
-  border-radius: 50%;
-  background: #fff;
-  opacity: .5;
-}
-
-.motes { position: absolute; inset: 0; overflow: hidden; }
-
-.motes i {
-  position: absolute;
-  bottom: -12vh;
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: var(--gold-soft);
-  opacity: 0;
-  will-change: transform, opacity;
-}
-
-/* motion is opt-out; see body.is-still */
-body:not(.is-still) .stars i { animation: twinkle 5s var(--ease) infinite; }
-body:not(.is-still) .motes i { animation: rise linear infinite; }
-
-@keyframes twinkle {
-  0%, 100% { opacity: .18; }
-  50%      { opacity: .85; }
-}
-
-@keyframes rise {
-  0%   { transform: translate3d(0, 0, 0) scale(.6); opacity: 0; }
-  12%  { opacity: .75; }
-  70%  { opacity: .5; }
-  100% { transform: translate3d(14px, -108vh, 0) scale(1.15); opacity: 0; }
-}
-
-/* ── horizon ────────────────────────────────────────────── */
-
-.horizon {
-  position: fixed;
-  left: 50%;
+  left: 0;
+  right: 0;
   bottom: 0;
-  width: min(980px, 172vw);
-  transform: translateX(-50%);
-  z-index: 1;
-  pointer-events: none;
+  height: min(58svh, 640px);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 100%);
 }
 
-.horizon svg { display: block; width: 100%; height: auto; }
+.scene__shot {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 58%;
+  will-change: opacity, filter;
+  /* set from JS as the fast progresses */
+  filter: brightness(.58) saturate(.62) contrast(1.04);
+}
 
-.hills   { fill: #02040a; }
-.s-dark  { fill: var(--stone-dark); }
-.s-mid   { fill: var(--stone-mid); }
-.s-light { fill: var(--stone-lite); }
+#shotTemple { opacity: 0; object-position: center 46%; }
 
-.spikes path { fill: #050912; transition: fill 1.2s var(--ease); }
-#windows rect { fill: #050912; transition: fill 1.2s var(--ease); }
-#rim { stroke: var(--gold-soft); }
+/* A slow drift so the photograph breathes. Off under reduced motion. */
+body:not(.is-still) .scene__shot { animation: drift 54s ease-in-out infinite alternate; }
+body:not(.is-still) #shotTemple { animation-delay: -27s; }
+
+@keyframes drift {
+  from { transform: scale(1.04) translate3d(0, 0, 0); }
+  to   { transform: scale(1.11) translate3d(-1.4%, -1.2%, 0); }
+}
+
+.scene__grade { position: absolute; inset: 0; will-change: opacity; }
+
+.scene__grade--cool {
+  background:
+    linear-gradient(180deg, #04070f 0%, rgba(9, 16, 42, .42) 46%, rgba(6, 10, 24, .5) 100%);
+}
+
+.scene__grade--warm {
+  opacity: 0;
+  background:
+    radial-gradient(96% 60% at 50% 82%, rgba(255, 196, 112, .5) 0%, rgba(219, 124, 62, .3) 40%, transparent 76%);
+}
+
+/* Constant, so the type stays readable when the photograph brightens. */
+.scene__scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg,
+      rgba(4, 6, 14, .7) 0%,
+      rgba(4, 6, 14, .3) 24%,
+      rgba(4, 6, 14, .34) 52%,
+      rgba(4, 6, 14, .62) 80%,
+      rgba(4, 6, 14, .84) 100%);
+}
 
 /* ── layout ─────────────────────────────────────────────── */
 
@@ -163,6 +128,8 @@ main {
   flex-direction: column;
   align-items: center;
   text-align: center;
+  /* Everything on this screen sits over a photograph. */
+  text-shadow: 0 1px 3px rgba(2, 4, 10, .9), 0 2px 18px rgba(2, 4, 10, .75);
 }
 
 .screen > .masthead,
@@ -304,7 +271,23 @@ body:not(.is-still) #ss.tick { opacity: .45; transform: translateY(-4px); }
 
 /* progress track */
 
-.track { width: 100%; margin: auto 0 8px; padding-top: 34px; }
+.track {
+  position: relative;
+  width: 100%;
+  margin: auto 0 8px;
+  padding: 30px 0 18px;
+}
+
+/* A soft wash so the milestones stay readable once the photograph
+   brightens up behind them. No hard edges. */
+.track::before {
+  content: "";
+  position: absolute;
+  inset: 0 -26px;
+  z-index: -1;
+  background: radial-gradient(72% 100% at 50% 50%,
+    rgba(3, 5, 12, .82) 0%, rgba(3, 5, 12, .58) 58%, transparent 100%);
+}
 
 .track__rail {
   position: relative;
@@ -389,6 +372,7 @@ body:not(.is-still) #ss.tick { opacity: .45; transform: translateY(-4px); }
   justify-content: center;
   padding: 40px 0;
   scroll-margin-top: 0;
+  text-shadow: 0 1px 3px rgba(2, 4, 10, .9), 0 2px 18px rgba(2, 4, 10, .75);
 }
 
 .quote { margin: 0; text-align: center; }
@@ -577,25 +561,36 @@ body:not(.is-still) #ss.tick { opacity: .45; transform: translateY(-4px); }
   max-width: 40ch;
 }
 
+.credits {
+  margin: 26px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+  font-family: var(--serif);
+  font-size: .88rem;
+  line-height: 1.55;
+  color: rgba(244, 239, 230, .5);
+  max-width: 52ch;
+}
+
+.credits a { color: rgba(244, 239, 230, .72); text-underline-offset: 3px; }
+.credits a:hover, .credits a:focus-visible { color: var(--gold); }
+
 /* ── wider screens ──────────────────────────────────────── */
 
 @media (min-width: 768px) {
   body { font-size: 18px; }
   main { max-width: 720px; }
-  .horizon { height: min(52svh, 460px); }
   .count__digits b { font-size: clamp(5rem, 11vw, 8.5rem); }
 }
 
 /* ── reduced motion ─────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
-  body:not(.is-moving) .stars i,
-  body:not(.is-moving) .motes i { animation: none !important; }
+  body:not(.is-moving) .scene__shot { animation: none !important; transform: scale(1.04); }
   body:not(.is-moving) #ss { transition: none; }
-  body:not(.is-moving) .motes { display: none; }
   body:not(.is-moving) .track__fill { transition: none; }
   body:not(.is-moving) * { scroll-behavior: auto; }
 }
 
 /* hard off, chosen by the user */
-body.is-still .motes { display: none; }
+body.is-still .scene__shot { animation: none; transform: scale(1.04); }
