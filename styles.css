@@ -51,37 +51,6 @@ body {
   background: var(--void);
 }
 
-/* One word, set enormous, holding the empty half of the screen.
-   It is the whole megillah in four letters, and it fades as the day turns. */
-.field__he {
-  position: absolute;
-  right: 0;
-  bottom: 32svh;
-  margin: 0;
-  font-family: var(--hebrew);
-  font-weight: 400;
-  font-size: clamp(5rem, 33vw, 13rem);
-  line-height: .96;
-  letter-spacing: -.02em;
-  text-align: right;
-  white-space: nowrap;
-  color: rgba(237, 234, 227, .125);
-  will-change: opacity;
-}
-
-/* Withheld until the very end. */
-.field__photo {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% 44%;
-  opacity: 0;
-  filter: brightness(.72) saturate(1.1) contrast(1.05);
-  will-change: opacity;
-}
-
 /* The first colour of the day, and it does not come before chatzos. */
 .field__ember {
   position: absolute;
@@ -92,11 +61,65 @@ body {
   will-change: opacity;
 }
 
-.field__veil {
+/* ── the top ────────────────────────────────────────────────
+   A photograph of the Beis Hamikdash holding the head of the page,
+   dissolving into the black the countdown sits on. */
+
+.topshot {
+  position: relative;
+  width: calc(100% + var(--gut) * 2);
+  margin: -14px calc(var(--gut) * -1) clamp(22px, 4svh, 40px);
+  height: clamp(230px, 40svh, 440px);
+  overflow: hidden;
+}
+
+.topshot img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 62%;
+  /* set from JS as the fast progresses */
+  filter: brightness(.62) saturate(.78) contrast(1.03);
+  will-change: filter;
+  transform: scale(1.02);
+}
+
+.topshot::after {
+  content: "";
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(10, 10, 10, .82) 0%, rgba(10, 10, 10, .5) 34%, rgba(10, 10, 10, .58) 70%, rgba(10, 10, 10, .88) 100%);
+    linear-gradient(180deg, rgba(10, 10, 10, .5) 0%, rgba(10, 10, 10, .16) 26%,
+                    rgba(10, 10, 10, .42) 68%, var(--void) 100%);
+}
+
+/* One word, set enormous over the photograph. The whole megillah in
+   four letters, and it lets go as the day turns. */
+.topshot__he {
+  position: absolute;
+  z-index: 2;
+  right: var(--gut);
+  bottom: 6px;
+  margin: 0;
+  font-family: var(--hebrew);
+  font-weight: 400;
+  font-size: clamp(4.2rem, 26vw, 10rem);
+  line-height: .92;
+  letter-spacing: -.02em;
+  white-space: nowrap;
+  color: rgba(237, 234, 227, .9);
+  text-shadow: 0 2px 26px rgba(6, 6, 8, .85), 0 1px 4px rgba(6, 6, 8, .7);
+  will-change: opacity;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .topshot img { animation: sway 48s ease-in-out infinite alternate; }
+}
+
+@keyframes sway {
+  from { transform: scale(1.02) translate3d(0, 0, 0); }
+  to   { transform: scale(1.09) translate3d(0, -1.6%, 0); }
 }
 
 /* ── chrome ─────────────────────────────────────────────── */
@@ -134,7 +157,7 @@ main {
   min-height: calc(100svh - 62px);
   display: flex;
   flex-direction: column;
-  padding: 8svh 0 22px;
+  padding: 0 0 22px;
 }
 
 .hero__body { margin-bottom: auto; }
@@ -163,7 +186,7 @@ main {
 .hero__count i { font-style: normal; color: var(--dim); margin: 0 -.02em; }
 
 #ss { transition: opacity .4s var(--ease); }
-body:not(.is-still) #ss.tick { opacity: .42; }
+#ss.tick { opacity: .42; }
 
 .hero__at {
   margin: clamp(14px, 2.6svh, 26px) 0 0;
@@ -444,25 +467,31 @@ body.has-ember .stage { color: var(--ember-lite); }
 .ghost:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
 .ghost[aria-pressed="true"] { color: var(--ember-lite); border-color: rgba(212, 112, 58, .5); }
 
-.hint {
-  margin: 16px 0 0;
-  font-size: .92rem;
-  color: var(--faint);
-  max-width: 42ch;
-}
+/* ── footer ─────────────────────────────────────────────── */
 
-.credits {
-  margin: 40px 0 0;
-  padding-top: 20px;
+.foot {
+  margin: 54px calc(var(--gut) * -1) 0;
+  padding: 26px var(--gut) calc(30px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--hair);
-  font-size: .84rem;
-  line-height: 1.55;
-  color: rgba(237, 234, 227, .32);
-  max-width: 56ch;
+  text-align: center;
 }
 
-.credits a { color: rgba(237, 234, 227, .52); text-underline-offset: 3px; }
-.credits a:hover, .credits a:focus-visible { color: var(--ember-lite); }
+.foot a {
+  display: inline-block;
+  min-height: 44px;
+  line-height: 44px;
+  font-size: .78rem;
+  font-weight: 300;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--faint);
+  text-decoration: none;
+  transition: color .2s var(--ease);
+}
+
+.foot b { font-weight: 600; color: var(--dim); transition: color .2s var(--ease); }
+.foot a:hover, .foot a:focus-visible { color: var(--dim); }
+.foot a:hover b, .foot a:focus-visible b { color: var(--ember-lite); }
 
 /* ── wider ──────────────────────────────────────────────── */
 
@@ -477,8 +506,7 @@ body.has-ember .stage { color: var(--ember-lite); }
 /* ── reduced motion ─────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
-  body:not(.is-moving) #ss { transition: none; }
-  body:not(.is-moving) .line__done,
-  body:not(.is-moving) .line__now { transition: none; }
-  body:not(.is-moving) * { scroll-behavior: auto; }
+  /* The ambient sway is off (see .topshot). The small feedback
+     transitions stay -- they carry meaning, not decoration. */
+  * { scroll-behavior: auto; }
 }

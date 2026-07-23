@@ -1,5 +1,5 @@
 /* Offline shell. Bump CACHE when files change. */
-var CACHE = 'tishabav-5786-v3';
+var CACHE = 'tishabav-5786-v4';
 
 var SHELL = [
   './',

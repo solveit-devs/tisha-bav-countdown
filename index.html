@@ -23,13 +23,10 @@
 <body>
 
 <!-- ── the field ──────────────────────────────────────────
-     The page keeps the fast. It opens on Eicha and nothing else,
-     and is given things back as the real milestones pass. -->
+     Eicha holds the empty half of the screen and lets go as the day turns.
+     The ember is withheld until chatzos has passed. -->
 <div class="field" aria-hidden="true">
-  <img class="field__photo" id="fieldPhoto" src="img/beis-hamikdash.jpg" alt="" decoding="async" />
-  <p class="field__he" id="fieldMourn" lang="he" dir="rtl">אֵיכָה</p>
   <div class="field__ember" id="fieldEmber"></div>
-  <div class="field__veil"></div>
 </div>
 
 <header class="bar">
@@ -40,6 +37,11 @@
 <main>
 
   <section class="hero">
+
+    <div class="topshot">
+      <img id="topPhoto" src="img/beis-hamikdash.jpg" alt="The Beis Hamikdash" decoding="async" />
+      <p class="topshot__he" id="fieldMourn" lang="he" dir="rtl" aria-hidden="true">אֵיכָה</p>
+    </div>
 
     <div class="hero__body">
       <p class="hero__label" id="heroLabel">The fast ends in</p>
@@ -102,19 +104,13 @@
     </p>
 
     <div class="tools">
-      <button class="ghost" id="motionBtn" type="button" aria-pressed="false">Ambient motion: on</button>
       <button class="ghost" id="installBtn" type="button" hidden>Add to home screen</button>
     </div>
-    <p class="hint" id="hint">On iPhone: Share, then Add to Home Screen. It works offline once loaded.</p>
-
-    <p class="credits">
-      Photographs from Wikimedia Commons: the Kotel at night by
-      <a href="https://commons.wikimedia.org/wiki/File:Western_Wall_at_night_(20063).jpg">Rhododendrites</a>
-      (CC BY-SA 4.0); the Beis Hamikdash, from the Holyland model of Second Temple Jerusalem at the
-      Israel Museum, by <a href="https://commons.wikimedia.org/wiki/File:Second_Temple.jpg">Ariely</a>
-      (CC BY 3.0).
-    </p>
   </section>
+
+  <footer class="foot">
+    <a href="https://solveitsolutions.ca" rel="noopener">Powered by <b>SolveIT Solutions</b></a>
+  </footer>
 
 </main>
 

@@ -124,6 +124,38 @@
   $('qNext').addEventListener('click', function () { showVerse(qIndex + 1, true); });
   $('qPrev').addEventListener('click', function () { showVerse(qIndex - 1, true); });
 
+  // Swipe. Horizontal only, so a swipe never fights the page scroll.
+  (function swipe(el) {
+    var x0 = null, y0 = null, locked = false;
+
+    el.addEventListener('touchstart', function (e) {
+      if (e.touches.length !== 1) return;
+      x0 = e.touches[0].clientX;
+      y0 = e.touches[0].clientY;
+      locked = false;
+    }, { passive: true });
+
+    el.addEventListener('touchmove', function (e) {
+      if (x0 === null || locked) return;
+      var dx = e.touches[0].clientX - x0;
+      var dy = e.touches[0].clientY - y0;
+      if (Math.abs(dy) > Math.abs(dx)) { x0 = null; return; }  // vertical: let it scroll
+      if (Math.abs(dx) > 55) {
+        // Hebrew reads right to left, so swiping left moves forward.
+        showVerse(qIndex + (dx < 0 ? 1 : -1), true);
+        locked = true;
+        x0 = null;
+      }
+    }, { passive: true });
+
+    el.addEventListener('touchend', function () { x0 = null; }, { passive: true });
+
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') showVerse(qIndex + 1, true);
+      if (e.key === 'ArrowLeft') showVerse(qIndex - 1, true);
+    });
+  })($('verses'));
+
   paintVerse(0);
   restartVerseTimer();
 
@@ -152,8 +184,11 @@
     $('fieldEmber').style.opacity = (ember * .9).toFixed(3);
     body.classList.toggle('has-ember', now >= CHATZOS);
 
-    // The Beis Hamikdash only at the very end.
-    $('fieldPhoto').style.opacity = (Math.pow(ramp(now, SHKIA, FAST_END), 1.7) * .72).toFixed(3);
+    // The Beis Hamikdash comes up out of the dark across the whole fast.
+    var lift = Math.pow(p, 1.35);
+    $('topPhoto').style.filter =
+      'brightness(' + (.62 + lift * .48).toFixed(3) + ') ' +
+      'saturate(' + (.78 + lift * .5).toFixed(3) + ') contrast(1.03)';
 
     $('lineDone').style.width = (p * 100).toFixed(2) + '%';
     $('lineNow').style.left = (p * 100).toFixed(2) + '%';
@@ -221,30 +256,6 @@
   tick();
   setInterval(tick, 1000);
 
-  // ── motion preference ────────────────────────────────────
-  var prefersStill = window.matchMedia('(prefers-reduced-motion: reduce)');
-  var motionBtn = $('motionBtn');
-  var stored = null;
-  try { stored = localStorage.getItem('tb-motion'); } catch (e) {}
-
-  function applyMotion(state) {
-    body.classList.remove('is-moving', 'is-still');
-    if (state === 'on') body.classList.add('is-moving');
-    if (state === 'off') body.classList.add('is-still');
-    var on = state === 'on' ? true : state === 'off' ? false : !prefersStill.matches;
-    motionBtn.textContent = 'Ambient motion: ' + (on ? 'on' : 'off');
-    motionBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    return on;
-  }
-
-  var motionOn = applyMotion(stored);
-
-  motionBtn.addEventListener('click', function () {
-    var next = motionOn ? 'off' : 'on';
-    motionOn = applyMotion(next);
-    try { localStorage.setItem('tb-motion', next); } catch (e) {}
-  });
-
   // ── install ──────────────────────────────────────────────
   var deferred = null;
   var installBtn = $('installBtn');
@@ -253,7 +264,6 @@
     e.preventDefault();
     deferred = e;
     installBtn.hidden = false;
-    $('hint').textContent = 'Install it and it opens full screen, and works with no signal.';
   });
 
   installBtn.addEventListener('click', function () {
